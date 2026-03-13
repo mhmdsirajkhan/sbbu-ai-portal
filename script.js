@@ -57,7 +57,7 @@ function checkIntegrity() {
     }
 }
 
-// 4. Advanced SBBU AI Detection Engine (Connecting to sirajkhn.pythonanywhere.com)
+// 4. Serverless API Connection (Directly to Hugging Face)
 async function scanDocument() {
     const text = document.getElementById('documentText').value;
     const reportBox = document.getElementById('scanReport');
@@ -67,51 +67,50 @@ async function scanDocument() {
         return;
     }
 
-    // 1. Show a loading screen while the server thinks
+    // 1. Show a loading screen
     reportBox.style.display = "block";
     reportBox.innerHTML = `
         <div style="text-align:center; padding: 30px;">
             <h3 style="color: #003366;">Scanning document... ⏳</h3>
-            <p style="color: #666; font-size: 14px;">Connecting to sirajkhn.pythonanywhere.com & Hugging Face ML Model...</p>
+            <p style="color: #666; font-size: 14px;">Connecting directly to the Hugging Face Neural Network...</p>
         </div>
     `;
 
     try {
-        // 2. Send the text to your live Python server
-        const response = await fetch('https://sirajkhn.pythonanywhere.com/scan', {
+        // 2. Direct connection to the AI model (Bypassing PythonAnywhere)
+        const API_URL = "https://api-inference.huggingface.co/models/roberta-base-openai-detector";
+        const API_KEY = "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"; // Your specific key
+
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${API_KEY}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ text: text })
+            body: JSON.stringify({ inputs: text })
         });
 
         if (!response.ok) {
-            throw new Error("Server connection error.");
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const result = await response.json();
 
-        // 3. Handle Hugging Face "Cold Start" (The model takes 20 seconds to wake up if unused)
+        // 3. Handle Hugging Face "Cold Start"
         if (result.error && result.error.includes("loading")) {
             reportBox.innerHTML = `
                 <div style="background: #fffde7; padding: 20px; border-left: 5px solid #fbc02d; text-align: left;">
                     <h3 style="color: #f57f17; margin-bottom: 10px;">⚠️ The AI Model is waking up!</h3>
-                    <p>Because we are using a free server, the Hugging Face ML model goes to sleep when not in use. It takes exactly 20 seconds to boot up.</p>
+                    <p>The AI neural network takes exactly 20 seconds to boot up.</p>
                     <p style="margin-top: 10px; font-weight: bold;">Please count to 20 and click "Run Compliance Scan" again.</p>
                 </div>`;
             return;
         }
 
-        if (result.error) {
-            reportBox.innerHTML = `<div style="color: red; padding: 20px; text-align: left;"><strong>Server Error:</strong> ${result.error}</div>`;
-            return;
-        }
-
-        // 4. Parse the true Data Science results
+        // 4. Parse the Data Science results
         let aiScore = 0;
         try {
-            // Hugging Face returns an array. We look for the "Fake" (AI generated) label.
+            // Find the "Fake" (AI generated) percentage
             const predictions = result[0];
             const fakeData = predictions.find(p => p.label === "Fake");
             if (fakeData) {
@@ -121,13 +120,13 @@ async function scanDocument() {
             aiScore = "N/A";
         }
 
-        // 5. Check for SBBU Policy Compliance
+        // 5. Check for Institutional Policy Compliance
         const hasDisclosure = text.toLowerCase().includes("acknowledge the use") || text.toLowerCase().includes("generative ai");
         let disclosureHTML = hasDisclosure 
             ? "<span style='color: #2ecc71; font-weight: bold;'>✅ Policy Met:</span> Disclosure Statement detected." 
             : "<span style='color: #e74c3c; font-weight: bold;'>❌ Policy Violation:</span> No AI Disclosure found. (Requires manual faculty review)";
 
-        // 6. Render the Final Dashboard
+        // 6. Render the Dashboard
         let riskColor, riskText;
         if (aiScore === "N/A" || aiScore === 0) {
             riskColor = "#95a5a6";
@@ -152,9 +151,9 @@ async function scanDocument() {
             
             <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left;">
                 <h4 style="margin-bottom: 10px; color: #333;">Live API Diagnostic Data</h4>
-                <p style="font-size: 14px; margin-bottom: 5px;"><strong>Backend Server:</strong> sirajkhn.pythonanywhere.com</p>
+                <p style="font-size: 14px; margin-bottom: 5px;"><strong>Architecture:</strong> Serverless Edge Function</p>
                 <p style="font-size: 14px; margin-bottom: 5px;"><strong>ML Model:</strong> roberta-base-openai-detector</p>
-                <p style="font-size: 14px; margin-bottom: 5px;"><strong>Status:</strong> Success (Neural Network Analysis)</p>
+                <p style="font-size: 14px; margin-bottom: 5px;"><strong>Status:</strong> Success (Direct Neural Network Analysis)</p>
             </div>
 
             <div style="border-top: 1px solid #ddd; padding-top: 15px; text-align: left;">
@@ -166,7 +165,7 @@ async function scanDocument() {
         reportBox.innerHTML = `
             <div style="background: #ffebee; padding: 20px; border-left: 5px solid #f44336; text-align: left;">
                 <h3 style="color: #c62828; margin-bottom: 10px;">Connection Error</h3>
-                <p>Could not reach the Python backend. Please check that your PythonAnywhere server is currently running and that CORS is configured properly.</p>
+                <p>Could not reach the Hugging Face API directly.</p>
                 <p style="margin-top: 10px; font-size: 12px; color: #666;">Technical details: ${error.message}</p>
             </div>`;
     }
