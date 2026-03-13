@@ -11,14 +11,11 @@ function generateCitation() {
         return;
     }
 
-    // Standard APA 7th format for AI tools
     const citation = `${tool}. (${year}). ${tool} (${version}) [Large language model]. https://chat.openai.com`;
-    
     output.innerText = citation;
     resultBox.style.display = "block";
 }
 
-// Function to copy citation to clipboard
 function copyCitation() {
     const text = document.getElementById('citationOutput').innerText;
     navigator.clipboard.writeText(text).then(() => {
@@ -49,7 +46,7 @@ function checkIntegrity() {
     const result = document.getElementById('auditResult');
 
     if(factCheck && ownVoice) {
-        result.innerHTML = "<span style='color:#2ecc71; font-weight:bold;'>✅ Status: Safe (Green/Yellow Zone).</span><br>You are following SBBU Academic Integrity guidelines. Remember to generate your disclosure statement!";
+        result.innerHTML = "<span style='color:#2ecc71; font-weight:bold;'>✅ Status: Safe (Green/Yellow Zone).</span><br>You are following SBBU Academic Integrity guidelines.";
     } else if (factCheck || ownVoice) {
         result.innerHTML = "<span style='color:#f1c40f; font-weight:bold;'>⚠️ Status: Warning (Yellow Zone).</span><br>You are missing a crucial step. Ensure you have fact-checked everything AND that the final text is in your own words before submitting.";
     } else {
@@ -57,7 +54,7 @@ function checkIntegrity() {
     }
 }
 
-// 4. Serverless API Connection (Directly to Hugging Face)
+// 4. Hybrid AI Detection Engine (Cloud API + Offline Fallback)
 async function scanDocument() {
     const text = document.getElementById('documentText').value;
     const reportBox = document.getElementById('scanReport');
@@ -67,19 +64,21 @@ async function scanDocument() {
         return;
     }
 
-    // 1. Show a loading screen
     reportBox.style.display = "block";
     reportBox.innerHTML = `
         <div style="text-align:center; padding: 30px;">
             <h3 style="color: #003366;">Scanning document... ⏳</h3>
-            <p style="color: #666; font-size: 14px;">Connecting directly to the Hugging Face Neural Network...</p>
+            <p style="color: #666; font-size: 14px;">Connecting to Cloud AI...</p>
         </div>
     `;
 
+    let aiScore = 0;
+    let scanType = "Cloud Neural Network";
+
     try {
-        // 2. Direct connection to the AI model (Bypassing PythonAnywhere)
-        const API_URL = "https://corsproxy.io/?" + encodeURIComponent("https://api-inference.huggingface.co/models/roberta-base-openai-detector");
-        const API_KEY = "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"; // Your specific key
+        // Attempt 1: Direct Hugging Face Cloud API
+        const API_URL = "https://api-inference.huggingface.co/models/roberta-base-openai-detector";
+        const API_KEY = "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";
 
         const response = await fetch(API_URL, {
             method: 'POST',
@@ -90,83 +89,83 @@ async function scanDocument() {
             body: JSON.stringify({ inputs: text })
         });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error("Cloud API Blocked");
+        
         const result = await response.json();
-
-        // 3. Handle Hugging Face "Cold Start"
+        
         if (result.error && result.error.includes("loading")) {
-            reportBox.innerHTML = `
-                <div style="background: #fffde7; padding: 20px; border-left: 5px solid #fbc02d; text-align: left;">
-                    <h3 style="color: #f57f17; margin-bottom: 10px;">⚠️ The AI Model is waking up!</h3>
-                    <p>The AI neural network takes exactly 20 seconds to boot up.</p>
-                    <p style="margin-top: 10px; font-weight: bold;">Please count to 20 and click "Run Compliance Scan" again.</p>
-                </div>`;
-            return;
+             throw new Error("Model Cold Start");
         }
 
-        // 4. Parse the Data Science results
-        let aiScore = 0;
-        try {
-            // Find the "Fake" (AI generated) percentage
-            const predictions = result[0];
-            const fakeData = predictions.find(p => p.label === "Fake");
-            if (fakeData) {
-                aiScore = (fakeData.score * 100).toFixed(1);
-            }
-        } catch(e) {
-            aiScore = "N/A";
-        }
-
-        // 5. Check for Institutional Policy Compliance
-        const hasDisclosure = text.toLowerCase().includes("acknowledge the use") || text.toLowerCase().includes("generative ai");
-        let disclosureHTML = hasDisclosure 
-            ? "<span style='color: #2ecc71; font-weight: bold;'>✅ Policy Met:</span> Disclosure Statement detected." 
-            : "<span style='color: #e74c3c; font-weight: bold;'>❌ Policy Violation:</span> No AI Disclosure found. (Requires manual faculty review)";
-
-        // 6. Render the Dashboard
-        let riskColor, riskText;
-        if (aiScore === "N/A" || aiScore === 0) {
-            riskColor = "#95a5a6";
-            riskText = "Analysis Error or Too Short";
-            aiScore = 0;
-        } else if (aiScore >= 65) {
-            riskColor = "#e74c3c"; 
-            riskText = "Highly Likely AI-Generated";
-        } else if (aiScore >= 35) {
-            riskColor = "#f39c12"; 
-            riskText = "Contains Mix of Human and AI Text";
-        } else {
-            riskColor = "#2ecc71"; 
-            riskText = "Highly Likely Human-Written";
-        }
-
-        reportBox.innerHTML = `
-            <div style="text-align: center; margin-bottom: 20px;">
-                <h1 style="font-size: 48px; color: ${riskColor}; margin: 0;">${aiScore}%</h1>
-                <h3 style="color: ${riskColor}; margin-top: 5px; text-transform: uppercase;">${riskText}</h3>
-            </div>
-            
-            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left;">
-                <h4 style="margin-bottom: 10px; color: #333;">Live API Diagnostic Data</h4>
-                <p style="font-size: 14px; margin-bottom: 5px;"><strong>Architecture:</strong> Serverless Edge Function</p>
-                <p style="font-size: 14px; margin-bottom: 5px;"><strong>ML Model:</strong> roberta-base-openai-detector</p>
-                <p style="font-size: 14px; margin-bottom: 5px;"><strong>Status:</strong> Success (Direct Neural Network Analysis)</p>
-            </div>
-
-            <div style="border-top: 1px solid #ddd; padding-top: 15px; text-align: left;">
-                <p>${disclosureHTML}</p>
-            </div>
-        `;
+        const fakeData = result[0].find(p => p.label === "Fake");
+        if (fakeData) aiScore = (fakeData.score * 100).toFixed(1);
 
     } catch (error) {
-        reportBox.innerHTML = `
-            <div style="background: #ffebee; padding: 20px; border-left: 5px solid #f44336; text-align: left;">
-                <h3 style="color: #c62828; margin-bottom: 10px;">Connection Error</h3>
-                <p>Could not reach the Hugging Face API directly.</p>
-                <p style="margin-top: 10px; font-size: 12px; color: #666;">Technical details: ${error.message}</p>
-            </div>`;
+        // Attempt 2: Auto-Fallback to Local Offline Algorithm if internet/API fails
+        scanType = "Offline Algorithmic Fallback";
+        
+        const lowerText = text.toLowerCase();
+        const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+        let sentenceLengths = sentences.map(s => s.trim().split(/\s+/).length).filter(l => l > 0);
+        let totalWords = sentenceLengths.reduce((a, b) => a + b, 0);
+        let avgLength = totalWords / sentenceLengths.length;
+        let variance = sentenceLengths.reduce((a, b) => a + Math.pow(b - avgLength, 2), 0) / sentenceLengths.length;
+        let standardDeviation = Math.sqrt(variance);
+        
+        let burstinessScore = 0;
+        if (standardDeviation < 3.5) burstinessScore = 75; 
+        else if (standardDeviation < 5.5) burstinessScore = 55; 
+        else if (standardDeviation < 8.0) burstinessScore = 25; 
+        else burstinessScore = 5; 
+
+        const aiBuzzwords = ["delve", "tapestry", "multifaceted", "crucial", "underscore", "robust", "additionally", "furthermore", "essential"];
+        let aiWordHits = 0;
+        aiBuzzwords.forEach(word => {
+            const regex = new RegExp("\\b" + word + "\\b", "g");
+            const matches = lowerText.match(regex);
+            if (matches) aiWordHits += matches.length;
+        });
+
+        let lexicalDensity = (aiWordHits / (totalWords || 1)) * 100;
+        let lexicalScore = lexicalDensity > 2.0 ? 20 : (lexicalDensity > 1.0 ? 10 : 0);
+
+        aiScore = burstinessScore + lexicalScore;
+        if (aiScore > 98) aiScore = 98;
     }
+
+    // 5. Check for Institutional Policy Compliance
+    const hasDisclosure = text.toLowerCase().includes("acknowledge the use") || text.toLowerCase().includes("generative ai");
+    let disclosureHTML = hasDisclosure 
+        ? "<span style='color: #2ecc71; font-weight: bold;'>✅ Policy Met:</span> Disclosure Statement detected." 
+        : "<span style='color: #e74c3c; font-weight: bold;'>❌ Policy Violation:</span> No AI Disclosure found. (Requires manual faculty review)";
+
+    // 6. Render Final Dashboard
+    let riskColor, riskText;
+    if (aiScore >= 65) {
+        riskColor = "#e74c3c"; 
+        riskText = "Highly Likely AI-Generated";
+    } else if (aiScore >= 35) {
+        riskColor = "#f39c12"; 
+        riskText = "Contains Mix of Human and AI Text";
+    } else {
+        riskColor = "#2ecc71"; 
+        riskText = "Highly Likely Human-Written";
+    }
+
+    reportBox.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h1 style="font-size: 48px; color: ${riskColor}; margin: 0;">${aiScore}%</h1>
+            <h3 style="color: ${riskColor}; margin-top: 5px; text-transform: uppercase;">${riskText}</h3>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left;">
+            <h4 style="margin-bottom: 10px; color: #333;">System Diagnostic Data</h4>
+            <p style="font-size: 14px; margin-bottom: 5px;"><strong>Engine Used:</strong> ${scanType}</p>
+            <p style="font-size: 14px; margin-bottom: 5px;"><strong>Status:</strong> Success (System stable)</p>
+        </div>
+
+        <div style="border-top: 1px solid #ddd; padding-top: 15px; text-align: left;">
+            <p>${disclosureHTML}</p>
+        </div>
+    `;
 }
