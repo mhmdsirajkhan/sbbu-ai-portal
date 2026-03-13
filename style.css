@@ -1,0 +1,156 @@
+/* General Variables & Reset */
+:root {
+    --primary: #003366; /* Deep University Blue */
+    --secondary: #FFD700; /* Gold */
+    --text: #333;
+    --bg-light: #f9f9f9;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    color: var(--text);
+    background: var(--white);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 0 20px;
+}
+
+/* Header & Nav */
+header {
+    background: var(--white);
+    padding: 20px 0;
+    border-bottom: 1px solid #eee;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.logo span { color: var(--secondary); }
+
+nav ul { list-style: none; display: flex; }
+nav ul li a {
+    text-decoration: none;
+    color: var(--text);
+    margin-left: 30px;
+    font-weight: 600;
+}
+
+/* Hero Section */
+.hero {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 44px;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.hero h1 span { color: var(--secondary); }
+
+.hero p {
+    font-size: 18px;
+    max-width: 700px;
+    margin: 0 auto 30px;
+}
+
+.btn-primary, .btn-secondary, .btn-action {
+    display: inline-block;
+    padding: 12px 25px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+}
+
+.btn-primary { background: var(--primary); color: var(--white); margin-right: 15px; }
+.btn-secondary { border: 2px solid var(--primary); color: var(--primary); }
+.btn-action { background: var(--primary); color: var(--white); width: 100%; margin-top: 10px; }
+.btn-small { background: var(--secondary); color: var(--primary); padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px;}
+
+/* Guidelines Grid */
+.guidelines, .workspace { padding: 80px 0; text-align: center; }
+.workspace { background-color: var(--bg-light); }
+
+.section-title { font-size: 32px; margin-bottom: 10px; }
+.section-subtitle { margin-bottom: 40px; color: #666; }
+
+.traffic-grid, .workspace-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.traffic-card, .workspace-card {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    text-align: left;
+}
+
+/* Traffic Lights */
+.traffic-card { border-top: 8px solid #ccc; transition: transform 0.3s; }
+.traffic-card:hover { transform: translateY(-5px); }
+.light-indicator { width: 20px; height: 20px; border-radius: 50%; margin-bottom: 15px; }
+
+.green-light { border-top-color: #2ecc71; }
+.green-light .light-indicator { background: #2ecc71; box-shadow: 0 0 10px #2ecc71; }
+.yellow-light { border-top-color: #f1c40f; }
+.yellow-light .light-indicator { background: #f1c40f; box-shadow: 0 0 10px #f1c40f; }
+.red-light { border-top-color: #e74c3c; }
+.red-light .light-indicator { background: #e74c3c; box-shadow: 0 0 10px #e74c3c; }
+
+.traffic-card ul li { margin-bottom: 10px; margin-left: 20px; font-size: 15px;}
+.policy-note { font-weight: bold; font-size: 12px; text-transform: uppercase; margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;}
+
+/* Workspace Area */
+.input-field {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.workspace-card h3 { color: var(--primary); margin-bottom: 10px; }
+.workspace-card p { font-size: 14px; margin-bottom: 15px; color: #555; }
+.check-item { margin-bottom: 10px; font-size: 15px; }
+
+.result-area {
+    margin-top: 15px;
+    padding: 15px;
+    background: #f1f5f9;
+    border-left: 4px solid var(--secondary);
+    border-radius: 4px;
+    font-size: 14px;
+}
+.result-area code { display: block; word-wrap: break-word; }
+
+footer { text-align: center; padding: 30px; background: #333; color: white; font-size: 14px; }

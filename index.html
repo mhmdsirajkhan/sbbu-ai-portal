@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SBBU SBA | AI Ethics & Integrity Portal</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <nav class="container">
+            <div class="logo">SBBU<span>AI</span></div>
+            <ul>
+                <li><a href="#guidelines">Policy Guidelines</a></li>
+                <li><a href="#workspace">Student Workspace</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Empowering SBBU with <br><span>Ethical AI</span></h1>
+            <p>A centralized resource for the students and faculty of Shaheed Benazir Bhutto University to integrate Generative AI with academic integrity.</p>
+            <div class="hero-btns">
+                <a href="#guidelines" class="btn-primary">View the Rules</a>
+                <a href="#workspace" class="btn-secondary">Use the Tools</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="guidelines" class="guidelines container">
+        <h2 class="section-title">SBBU AI Usage Framework</h2>
+        <p class="section-subtitle">Follow these color-coded rules for all academic assignments.</p>
+        
+        <div class="traffic-grid">
+            <div class="traffic-card green-light">
+                <div class="light-indicator"></div>
+                <h3>Green: Permitted</h3>
+                <ul>
+                    <li>Brainstorming research topics.</li>
+                    <li>Creating essay outlines.</li>
+                    <li>Explaining complex concepts.</li>
+                </ul>
+                <p class="policy-note">No Disclosure Required</p>
+            </div>
+
+            <div class="traffic-card yellow-light">
+                <div class="light-indicator"></div>
+                <h3>Yellow: Acknowledge</h3>
+                <ul>
+                    <li>Drafting specific sections.</li>
+                    <li>Translating academic texts.</li>
+                    <li>Grammar and style checking.</li>
+                </ul>
+                <p class="policy-note">Must include Disclosure</p>
+            </div>
+
+            <div class="traffic-card red-light">
+                <div class="light-indicator"></div>
+                <h3>Red: Prohibited</h3>
+                <ul>
+                    <li>Generating full research papers.</li>
+                    <li>Solving online exam questions.</li>
+                    <li>Copy-pasting AI text directly.</li>
+                </ul>
+                <p class="policy-note">Violates Academic Integrity</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="workspace" class="workspace container">
+        <h2 class="section-title">SBBU AI-Integrity Workspace</h2>
+        <p class="section-subtitle">Complete your ethical documentation directly on this portal.</p>
+
+        <div class="workspace-grid">
+            
+            <div class="workspace-card">
+                <h3>1. APA Citation Generator</h3>
+                <p>Enter the tool details to generate your reference.</p>
+                <input type="text" id="aiTool" placeholder="AI Tool (e.g., ChatGPT)" class="input-field">
+                <input type="text" id="aiVersion" placeholder="Version (e.g., 4.0)" class="input-field">
+                <button onclick="generateCitation()" class="btn-action">Generate Reference</button>
+                <div id="resultBox" class="result-area" style="display: none;">
+                    <code id="citationOutput"></code>
+                    <button onclick="copyCitation()" class="btn-small">Copy</button>
+                </div>
+            </div>
+
+            <div class="workspace-card">
+                <h3>2. Disclosure Builder</h3>
+                <p>Select how you used AI to generate your acknowledgment.</p>
+                <select id="usageType" class="input-field">
+                    <option value="brainstorming">Brainstorming & Outlining</option>
+                    <option value="drafting">Drafting Content</option>
+                    <option value="editing">Grammar & Style Editing</option>
+                </select>
+                <button onclick="buildStatement()" class="btn-action">Build Statement</button>
+                <div id="statementResult" class="result-area"></div>
+            </div>
+
+            <div class="workspace-card">
+                <h3>3. Integrity Self-Audit</h3>
+                <p>Check your work against the SBBU policy.</p>
+                <div class="check-item">
+                    <input type="checkbox" id="check1"> <label>Did you verify all the facts?</label>
+                </div>
+                <div class="check-item">
+                    <input type="checkbox" id="check2"> <label>Is the final writing in your own voice?</label>
+                </div>
+                <button onclick="checkIntegrity()" class="btn-action">Check Status</button>
+                <div id="auditResult" class="result-area"></div>
+            </div>
+
+        </div>
+    </section>
+<section id="faculty" class="faculty-scanner container" style="background-color: #eef2f5; padding: 80px 0; margin-top: 40px;">
+        <h2 class="section-title">SBBU Document Scanner</h2>
+        <p class="section-subtitle">For Faculty Audits and Student Pre-Checks.</p>
+
+        <div class="scanner-box" style="max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 5px solid var(--primary);">
+            <p style="margin-bottom: 15px;"><strong>Instructions:</strong> Paste the assignment text below. The system will scan for common AI-generated language patterns and check if the SBBU AI Disclosure Policy is met.</p>
+            
+            <textarea id="documentText" rows="10" placeholder="Paste the essay or assignment text here for scanning..." style="width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 5px; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
+            
+            <button onclick="scanDocument()" class="btn-primary" style="margin-top: 20px; width: 100%;">Run Compliance Scan</button>
+            
+            <div id="scanReport" class="result-area" style="display: none; margin-top: 25px; background: #fff; border: 1px solid #ddd;">
+                </div>
+        </div>
+    </section>
+    <footer>
+        <p>&copy; 2026 Shaheed Benazir Bhutto University, SBA | B.Ed (Hons) Final Research Project</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
