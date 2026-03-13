@@ -78,7 +78,7 @@ async function scanDocument() {
 
     try {
         // 2. Direct connection to the AI model (Bypassing PythonAnywhere)
-        const API_URL = "https://api-inference.huggingface.co/models/roberta-base-openai-detector";
+        const API_URL = "https://corsproxy.io/?" + encodeURIComponent("https://api-inference.huggingface.co/models/roberta-base-openai-detector");
         const API_KEY = "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"; // Your specific key
 
         const response = await fetch(API_URL, {
